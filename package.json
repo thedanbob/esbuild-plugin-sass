@@ -6,7 +6,7 @@
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thedanbob/esbuild-plugin-sass.git"
+    "url": "git+https://github.com/thedanbob/esbuild-plugin-sass.git"
   },
   "exports": {
     ".": {
