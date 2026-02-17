@@ -1,7 +1,7 @@
 {
   "name": "@thedanbob/esbuild-plugin-sass",
   "author": "Dan Arnfield <npm@thedanbob.com>",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "main": "./dist/index.js",
   "repository": {

@@ -1,16 +1,20 @@
 import { Plugin, PartialMessage } from "esbuild"
-import { compile, Options, Logger } from "sass"
+import { compile, Options, DeprecationOrId, Logger } from "sass"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 export interface PluginOptions {
   filter?: RegExp
   importers?: Options<"sync">["importers"]
+  quietDeps?: boolean
+  silenceDeprecations?: DeprecationOrId[]
   transform?: (css: string, resolveDir: string, filePath: string) => string | Promise<string>
 }
 
 export default ({
   filter = /.(s[ac]ss|css)$/,
+  quietDeps = false,
+  silenceDeprecations = [],
   importers = [],
   transform = undefined
 }: PluginOptions = {}): Plugin => ({
@@ -45,6 +49,8 @@ export default ({
         sourceMap: !!initialOptions.sourcemap,
         sourceMapIncludeSources: true,
         logger,
+        quietDeps,
+        silenceDeprecations,
         importers
       })
 

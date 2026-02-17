@@ -30,11 +30,22 @@ node esbuild.config.js
 ## Config
 
 ### `filter`
-
 Type: `RegExp`<br>
 Default: `/.(s[ac]ss|css)$/`
 
 Esbuild load filter (go syntax).
+
+### `quietDeps`
+Type: `boolean`<br>
+Default: `false`
+
+Silence warnings in dependencies.
+
+### `silenceDeprecations`
+Type: `DeprecationOrId[]`<br>
+Default: `[]`
+
+Array of [deprecations](https://sass-lang.com/documentation/js-api/interfaces/options/#silenceDeprecations) to silence.
 
 ### `importers`
 Type: `(NodePackageImporter | Importer<sync> | FileImporter<sync>)[]`<br>
