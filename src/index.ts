@@ -54,26 +54,23 @@ export default ({
         importers
       })
 
-      let cssText = css.toString()
+      let contents = css.toString()
 
       if (sourceMap) {
         const data = Buffer.from(JSON.stringify(sourceMap), "utf-8").toString("base64")
-        const sm = `/*# sourceMappingURL=data:application/json;charset=utf-8;base64,${data} */`
-        cssText += "\n" + sm
+        contents += `\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,${data} */`
       }
 
       if (transform) {
-        cssText = await transform(cssText, resolveDir, path)
+        contents = await transform(contents, resolveDir, path)
       }
 
-      const watchFiles = [path, ...loadedUrls.map(u => fileURLToPath(u))]
-
       return {
-        contents: cssText,
         loader: "css",
+        contents,
         resolveDir,
         warnings,
-        watchFiles
+        watchFiles: [path, ...loadedUrls.map(u => fileURLToPath(u))]
       }
     })
   }
