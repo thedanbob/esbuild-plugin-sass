@@ -7,8 +7,14 @@ const importer: FileImporter = {
   findFileUrl: (url) => {
     if (!url.startsWith("~")) return null
 
-    const pkg = url.replace(/^~(.+?)\/.+/, "$1")
-    return new URL(url.substring(1), import.meta.resolve(pkg).replace(/(?<=node_modules\/).+/, ""))
+    try {
+      // import.meta.resolve searches for an index file by default, which isn't guaranteed to exist.
+      // Instead, we attempt to resolve <package>/package.json
+      const file = url.replace(/^~(.+?)\/.+/, "$1/package.json")
+      return new URL(url.substring(1), import.meta.resolve(file).replace(/(?<=node_modules\/).+/, ""))
+    } catch {
+      return null
+    }
   }
 }
 
