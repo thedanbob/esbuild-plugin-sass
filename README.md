@@ -10,8 +10,8 @@ npm install --save-dev esbuild @thedanbob/esbuild-plugin-sass
 
 ## How to use
 
+`esbuild.config.js`:
 ```js
-// esbuild.config.js
 import { build } from "esbuild"
 import sassPlugin from "@thedanbob/esbuild-plugin-sass"
 
@@ -23,6 +23,13 @@ await build({
 });
 ```
 
+`app.scss`:
+```scss
+/* Prepend with ~ to import from node_modules */
+@import "~bootstrap/scss/bootstrap"
+```
+
+Run:
 ```bash
 node esbuild.config.js
 ```
@@ -46,12 +53,6 @@ Type: `DeprecationOrId[]`<br>
 Default: `[]`
 
 Array of [deprecations](https://sass-lang.com/documentation/js-api/interfaces/options/#silenceDeprecations) to silence.
-
-### `importers`
-Type: `(NodePackageImporter | Importer<sync> | FileImporter<sync>)[]`<br>
-Default: `[]`
-
-Array of [importers](https://sass-lang.com/documentation/js-api/interfaces/options/#importers) passed to the Sass compiler.
 
 ### `transform`
 Type: `(css: string, resolveDir: string, filePath: string) => string | Promise<string>`<br>

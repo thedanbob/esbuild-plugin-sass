@@ -1,11 +1,19 @@
 import { Plugin, PartialMessage } from "esbuild"
-import { compile, Options, DeprecationOrId, Logger } from "sass"
+import { compile, DeprecationOrId, Logger, FileImporter } from "sass"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
+const importer: FileImporter = {
+  findFileUrl: (url) => {
+    if (!url.startsWith("~")) return null
+
+    const pkg = url.replace(/^~(.+?)\/.+/, "$1")
+    return new URL(url.substring(1), import.meta.resolve(pkg).replace(/(?<=node_modules\/).+/, ""))
+  }
+}
+
 export interface PluginOptions {
   filter?: RegExp
-  importers?: Options<"sync">["importers"]
   quietDeps?: boolean
   silenceDeprecations?: DeprecationOrId[]
   transform?: (css: string, resolveDir: string, filePath: string) => string | Promise<string>
@@ -15,7 +23,6 @@ export default ({
   filter = /.(s[ac]ss|css)$/,
   quietDeps = false,
   silenceDeprecations = [],
-  importers = [],
   transform = undefined
 }: PluginOptions = {}): Plugin => ({
   name: "sass",
@@ -51,7 +58,7 @@ export default ({
         logger,
         quietDeps,
         silenceDeprecations,
-        importers
+        importers: [importer]
       })
 
       let contents = css.toString()
