@@ -1,20 +1,10 @@
 import { Syntax, Importer } from "sass"
 import { statSync } from "node:fs"
 
-const isFile = (url: URL): boolean => !!statSync(url, { throwIfNoEntry: false })?.isFile()
-const isDirectory = (url: URL): boolean => !!statSync(url, { throwIfNoEntry: false })?.isDirectory()
+const isFile = (url: URL) => !!statSync(url, { throwIfNoEntry: false })?.isFile()
+const isDir = (url: URL) => !!statSync(url, { throwIfNoEntry: false })?.isDirectory()
 
-const sassSyntax = (url: URL): Syntax => {
-  const { pathname } = url
-
-  if (pathname.endsWith(".scss")) {
-    return "scss"
-  } else if (pathname.endsWith(".css")) {
-    return "css"
-  } else {
-    return "indented"
-  }
-}
+const sassSyntax = (path: string) => (path.match(/\.(s?css)$/)?.[1] || "indented") as Syntax
 
 const canonicalize: Importer<"sync">["canonicalize"] = (url, { containingUrl }) => {
   let orig: URL
@@ -35,7 +25,7 @@ const canonicalize: Importer<"sync">["canonicalize"] = (url, { containingUrl }) 
   const file = new URL(orig)
 
   if (orig.pathname.match(/\.s[ac]ss$/)) {
-    file.href = orig.href.replace(/\/([^/]+?)(\.sass|\.scss)$/, "/_$1$2")
+    file.href = orig.href.replace(/\/([^/]+)$/, "/_$1")
     if (isFile(file)) return file
   } else {
     file.pathname = orig.pathname + ".scss"
@@ -48,7 +38,7 @@ const canonicalize: Importer<"sync">["canonicalize"] = (url, { containingUrl }) 
     if (isFile(file)) return file
   }
 
-  if (isDirectory(orig)) {
+  if (isDir(orig)) {
     for (const idx in ["index.scss", "index.sass", "_index.scss", "_index.sass"]) {
       file.pathname = `${orig.pathname}/${idx}`
       if (isFile(file)) return file
