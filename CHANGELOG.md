@@ -1,5 +1,8 @@
 # Change Log - @thedanbob/esbuild-plugin-sass
 
+## v3.0.0 - 2026-03-10
+Make arguments to `precompile` and `transform` consistent.
+
 ## v2.1.2 - 2026-03-09
 Add `precompile` option.
 

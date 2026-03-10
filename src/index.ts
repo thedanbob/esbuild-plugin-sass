@@ -9,8 +9,8 @@ export interface PluginOptions {
   filter?: RegExp
   quietDeps?: boolean
   silenceDeprecations?: DeprecationOrId[]
-  precompile?: (source: string, url: URL) => string
-  transform?: (css: string, resolveDir: string, filePath: string) => string | Promise<string>
+  precompile?: (source: string, filePath: string) => string
+  transform?: (css: string, filePath: string) => string | Promise<string>
 }
 
 export default ({
@@ -56,14 +56,15 @@ export default ({
         importers: [{
           canonicalize,
           load: (canonicalUrl) => {
+            const path = fileURLToPath(canonicalUrl)
             let contents = readFileSync(canonicalUrl, "utf8")
             if (precompile) {
-              contents = precompile(contents, canonicalUrl)
+              contents = precompile(contents, path)
             }
 
             return {
               contents,
-              syntax: sassSyntax(canonicalUrl),
+              syntax: sassSyntax(path),
               sourceMapUrl: initialOptions.sourcemap ? canonicalUrl : undefined
             }
           }
@@ -78,7 +79,7 @@ export default ({
       }
 
       if (transform) {
-        contents = await transform(contents, resolveDir, path)
+        contents = await transform(contents, path)
       }
 
       return {

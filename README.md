@@ -54,8 +54,14 @@ Default: `[]`
 
 Array of [deprecations](https://sass-lang.com/documentation/js-api/interfaces/options/#silenceDeprecations) to silence.
 
+### `precompile`
+Type: `(css: string, filePath: string) => string`<br>
+Default: `undefined`
+
+Function that pre-processes the source files before passing them to Sass.
+
 ### `transform`
-Type: `(css: string, resolveDir: string, filePath: string) => string | Promise<string>`<br>
+Type: `(css: string, filePath: string) => string | Promise<string>`<br>
 Default: `undefined`
 
 Function that post-processes the CSS compiled by Sass before returning it to esbuild.
