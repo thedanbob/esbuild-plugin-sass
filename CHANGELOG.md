@@ -1,5 +1,8 @@
 # Change Log - @thedanbob/esbuild-plugin-sass
 
+## v2.1.2 - 2026-03-09
+Add `precompile` option.
+
 ## v2.0.1 - 2026-02-17
 Fix edge cases in package resolution.
 

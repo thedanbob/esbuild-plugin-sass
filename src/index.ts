@@ -1,34 +1,23 @@
 import { Plugin, PartialMessage } from "esbuild"
-import { compile, DeprecationOrId, Logger, FileImporter } from "sass"
+import { compile, DeprecationOrId, Logger } from "sass"
+import { sassSyntax, canonicalize } from "./utils.js"
 import { dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-
-const importer: FileImporter = {
-  findFileUrl: (url) => {
-    if (!url.startsWith("~")) return null
-
-    try {
-      // import.meta.resolve searches for an index file by default, which isn't guaranteed to exist.
-      // Instead, we attempt to resolve <package>/package.json
-      const file = url.replace(/^~(.+?)\/.+/, "$1/package.json")
-      return new URL(url.substring(1), import.meta.resolve(file).replace(/(?<=node_modules\/).+/, ""))
-    } catch {
-      return null
-    }
-  }
-}
+import { readFileSync } from "node:fs"
 
 export interface PluginOptions {
   filter?: RegExp
   quietDeps?: boolean
   silenceDeprecations?: DeprecationOrId[]
+  precompile?: (source: string, url: URL) => string
   transform?: (css: string, resolveDir: string, filePath: string) => string | Promise<string>
 }
 
 export default ({
-  filter = /.(s[ac]ss|css)$/,
+  filter = /\.(s[ac]ss|css)$/,
   quietDeps = false,
   silenceDeprecations = [],
+  precompile = undefined,
   transform = undefined
 }: PluginOptions = {}): Plugin => ({
   name: "sass",
@@ -64,7 +53,21 @@ export default ({
         logger,
         quietDeps,
         silenceDeprecations,
-        importers: [importer]
+        importers: [{
+          canonicalize,
+          load: (canonicalUrl) => {
+            let contents = readFileSync(canonicalUrl, "utf8")
+            if (precompile) {
+              contents = precompile(contents, canonicalUrl)
+            }
+
+            return {
+              contents,
+              syntax: sassSyntax(canonicalUrl),
+              sourceMapUrl: initialOptions.sourcemap ? canonicalUrl : undefined
+            }
+          }
+        }]
       })
 
       let contents = css.toString()
