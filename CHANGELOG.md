@@ -1,5 +1,8 @@
 # Change Log - @thedanbob/esbuild-plugin-sass
 
+## v3.0.1 - 2026-04-09
+Loosen esbuild peer dependency.
+
 ## v3.0.0 - 2026-03-10
 Make arguments to `precompile` and `transform` consistent.
 
